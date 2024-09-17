@@ -185,7 +185,7 @@ function LoadWebsite() {
             requestbutton.addEventListener("click", function() {
                 fetch(`https://lrc.pythonanywhere.com/requestImage?tubo=${curTubo}`)
                     .then(response => {
-                        return response.text(); // Or use response.text() for plain text
+                        return response.text();
                     })
                     .then(data => {
                         if (data == "BUSY") {
@@ -259,7 +259,7 @@ function ActivatePictureButtons() {
 
         else {
             CurrentIDX--;
-            curImg.src = `https://lrc.pythonanywhere.com/getimage/${CurrentPrevTubo}/picture${CurrentIDX}`
+            curImg.src = `https://lrc.pythonanywhere.com/getimage/${CurrentPrevTubo}/picture${CurrentIDX}.jpg`
         }
     }) 
 
@@ -270,7 +270,7 @@ function ActivatePictureButtons() {
 
         else {
             CurrentIDX++;
-            curImg.src = `https://lrc.pythonanywhere.com/getimage/${CurrentPrevTubo}/picture${CurrentIDX}`
+            curImg.src = `https://lrc.pythonanywhere.com/getimage/${CurrentPrevTubo}/picture${CurrentIDX}.jpg`
         }
     }) 
 
