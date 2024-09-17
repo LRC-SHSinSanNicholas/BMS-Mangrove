@@ -178,7 +178,7 @@ function LoadWebsite() {
                 let currentTemplate = imgPrevTemplate.replace("--TUBONAME--", curData["name"])
                 CurrentPrevTubo = curTubo
                 imagePreview.innerHTML = currentTemplate
-                document.getElementById("imgpreview").src = `https://lrc.pythonanywhere.com/getimage/${CurrentPrevTubo}/picture${CurrentIDX}`
+                document.getElementById("imgpreview").src = `https://lrc.pythonanywhere.com/getimage/${CurrentPrevTubo}/picture${CurrentIDX}.jpg`
                 ActivatePictureButtons();
             })
 
