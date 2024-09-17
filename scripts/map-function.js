@@ -194,6 +194,12 @@ function LoadWebsite() {
                             LoadingMSG.textContent = "Currently busy! Please try again later!"
                         }
 
+                        else if (data == "OFFLINE") {
+                            LoadingPanel.className = "loading-screen active";
+
+                            LoadingMSG.textContent = "Device is offline! Please try again later!"
+                        }
+
                         else {
                             LoadingPanel.className = "loading-screen active";
                             LoadingMSG.textContent = "Requesting data, Please wait for 5 mins and check the current preview!"
