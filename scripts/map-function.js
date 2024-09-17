@@ -27,6 +27,7 @@ const menuTemplate = `
         </div>
         <hr>
         <div class="info">--data--</div>
+    
     `
 
 const dataTemplate = `
@@ -41,7 +42,37 @@ const dataTemplate = `
         </div>
         <hr>
         <div class="info">--data--</div>
+        <div class="buttonSelection">
+            <button class="sideButton" id="tuboprev">Image Preview</button>
+            <button class="sideButton" id="reqImg">Request Image</button>
+        </div>
     `
+
+const imgPrevTemplate = `
+        <div class="container">
+            <div class="closebutton" id="imgprev">
+                <span class="material-symbols-outlined">
+                    close
+                </span>
+            </div>
+            <h2>--TUBONAME--</h2>
+            <div class="img-container">
+                <div class="control" id="prev">
+                    <span class="material-symbols-outlined">
+                        arrow_back_ios
+                    </span>
+                </div>
+                <div class="img-wrapper">
+                    <img src="" alt="" id="imgpreview">
+                </div>
+                <div class="control" id="next">
+                    <span class="material-symbols-outlined">
+                        arrow_forward_ios
+                    </span>
+                </div>
+            </div>
+        </div>
+`
 
 const onlineCounter = document.getElementById("onlineCounter");
 const activeList = document.getElementById("active-list");
@@ -51,10 +82,16 @@ const menuList = document.getElementById("menu-setting");
 const innovations = document.querySelectorAll(".innovation");
 const sideInfo = document.getElementById("sideinfo");
 
+const LoadingMSG = document.getElementById("loading-msg");
+const imagePreview = document.getElementById("ImagePreview");
+const LoadingPanel = document.getElementById("loading");
+
 var tuboList = []
 var totalTubo = {}
 var totalOnline = 0;
 var CurrentData = {}
+var CurrentIDX = 0;
+var CurrentPrevTubo = 1;
 
 var pastRecord = localStorage.getItem("pastData");
 
@@ -62,6 +99,10 @@ if (pastRecord != null) {
     CurrentData = JSON.parse(pastRecord);
     LoadWebsite();
 }
+
+document.getElementById("loadingclose").addEventListener("click", function() {
+    LoadingPanel.className = "loading-screen";
+})
 
 fetch("https://lrc.pythonanywhere.com/getData")
     .then(response => {
@@ -123,9 +164,45 @@ function LoadWebsite() {
                 message = "• No messages to display! Yay!"
             }
     
-            info = info.replace("--data--", `<p><span class="material-symbols-outlined">device_thermostat</span> Temperature: ${curData["temperature"]}</p> <p><span class="material-symbols-outlined">humidity_percentage</span> Humidity: ${curData["humidity"]} </p><p><span class="material-symbols-outlined">water</span> Water Level: ${curData["waterlevel"]}</p><p><span class="material-symbols-outlined">water_ph</span> pH Level: ${curData["pH"]}</p><p><span class="material-symbols-outlined">nutrition</span> Nutrients: ${curData["nutrients"]}</p><p><span class="material-symbols-outlined">rainy</span> Raining: ${curData["rain"]}</p> <hr> <h4>${curData["timeUpdated"]}</h4> <br> <p>${message}</p>`)
+            info = info.replace("--data--", `<p><span class="material-symbols-outlined">device_thermostat</span> Temperature: ${curData["temperature"]}</p> <p><span class="material-symbols-outlined">humidity_percentage</span> Humidity: ${curData["humidity"]} </p><p><span class="material-symbols-outlined">water</span> Water Level: ${curData["waterlevel"]}</p><p><span class="material-symbols-outlined">water_ph</span> pH Level: ${parseInt(curData["pH"])}</p><p><span class="material-symbols-outlined">dew_point</span> Soil Moisture: ${curData["moisture"]}</p><p><span class="material-symbols-outlined">thermostat</span> Soil Temperature: ${curData["soiltemp"]}</p><p><span class="material-symbols-outlined">water_ec</span> Soil Conductivity: ${curData["soilconduct"]}</p><p><span class="material-symbols-outlined">rainy</span> Raining: ${curData["rain"]}</p> <hr> <h4>${curData["timeUpdated"]}</h4> <br> <p>${message}</p>`)
             sideData.innerHTML = info;
             sideData.className = "sidedata active";
+
+            let previewbutton = document.getElementById("tuboprev")
+            let requestbutton = document.getElementById("reqImg")
+
+            let curTubo = parseInt(curData["idx"].replace("idx", "")) + 1;
+
+            previewbutton.addEventListener("click", function() {
+                imagePreview.className = "imgPreview active";
+                let currentTemplate = imgPrevTemplate.replace("--TUBONAME--", curData["name"])
+                CurrentPrevTubo = curTubo
+                imagePreview.innerHTML = currentTemplate
+                document.getElementById("imgpreview").src = `https://lrc.pythonanywhere.com/getimage/${CurrentPrevTubo}/picture${CurrentIDX}`
+                ActivatePictureButtons();
+            })
+
+            requestbutton.addEventListener("click", function() {
+                fetch(`https://lrc.pythonanywhere.com/requestImage?tubo=${curTubo}`)
+                    .then(response => {
+                        return response.text(); // Or use response.text() for plain text
+                    })
+                    .then(data => {
+                        if (data == "BUSY") {
+                            LoadingPanel.className = "loading-screen active";
+
+                            LoadingMSG.textContent = "Currently busy! Please try again later!"
+                        }
+
+                        else {
+                            LoadingPanel.className = "loading-screen active";
+                            LoadingMSG.textContent = "Requesting data, Please wait for 5 mins and check the current preview!"
+                        }
+                    })
+            })
+
+            requestbutton
+
             ActivateCloseButton();
         })
     
@@ -164,6 +241,42 @@ function ActivateHyperAction() {
             tuboList[parseInt(allTuboElements[i].id.replace("idx", ""))].click()
         })
     }
+}
+
+function ActivatePictureButtons() {
+    let closeButton = document.getElementById("imgprev");
+    let prevButton = document.getElementById("prev");
+    let nextButton = document.getElementById("next");
+
+    let curImg = document.getElementById("imgpreview");
+
+    CurrentIDX = 0;
+
+    prevButton.addEventListener("click", function() {
+        if (CurrentIDX == 0) {
+            return;
+        }
+
+        else {
+            CurrentIDX--;
+            curImg.src = `https://lrc.pythonanywhere.com/getimage/${CurrentPrevTubo}/picture${CurrentIDX}`
+        }
+    }) 
+
+    nextButton.addEventListener("click", function() {
+        if (CurrentIDX == 7) {
+            return;
+        }
+
+        else {
+            CurrentIDX++;
+            curImg.src = `https://lrc.pythonanywhere.com/getimage/${CurrentPrevTubo}/picture${CurrentIDX}`
+        }
+    }) 
+
+    closeButton.addEventListener("click", function() {
+        imagePreview.className = "imgPreview";
+    })
 }
 
 function openMenu() {
