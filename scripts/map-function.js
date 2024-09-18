@@ -116,7 +116,9 @@ fetch("https://lrc.pythonanywhere.com/getData")
     });
 
 function LoadWebsite() {
-    var totalTubo = CurrentData["tubo"].length
+    var totalTubo = CurrentData["tubo"].length;
+
+    totalOnline = 0;
 
     for (let i = 0; i < CurrentData["tubo"].length; i++) {
         let curData = CurrentData["tubo"][i];
@@ -134,7 +136,7 @@ function LoadWebsite() {
     
         statusDiv.className = `status-icon ${statusMap["color"][curData["status"]]}`
     
-        if (curData["status"] == "active" || curData["status"] == "warning") {
+        if (curData["status"] != "offline") {
             totalOnline++;
         }
     
