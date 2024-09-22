@@ -204,7 +204,7 @@ function LoadWebsite() {
 
                         else {
                             LoadingPanel.className = "loading-screen active";
-                            LoadingMSG.textContent = "Requesting data, Please wait for 5 mins and check the current preview!"
+                            LoadingMSG.textContent = "Requesting data, Please wait for at least a minute and reload the page!"
                         }
                     })
             })
