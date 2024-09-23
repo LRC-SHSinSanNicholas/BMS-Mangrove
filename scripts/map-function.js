@@ -290,7 +290,7 @@ function ActivatePictureButtons() {
 function openMenu() {
     let info = menuTemplate;
 
-    info = info.replace("--title--", "All Tubo Projects: ");
+    info = info.replace("--title--", "All BMS Devices ");
 
     let infoData = ""
     let Checker = false;
@@ -322,7 +322,7 @@ function openMenu() {
 function openActive() {
     let info = menuTemplate;
 
-    info = info.replace("--title--", "Active Tubo Projects: ");
+    info = info.replace("--title--", "Active BMS Devices: ");
 
     let infoData = ""
     let Checker = false;
@@ -356,7 +356,7 @@ function openActive() {
 function openWarning() {
     let info = menuTemplate;
 
-    info = info.replace("--title--", "Danger Tubo Projects: ");
+    info = info.replace("--title--", "In danger BMS Devices");
 
     let infoData = ""
     let Checker = false;
@@ -390,7 +390,7 @@ function openWarning() {
 function openOffline() {
     let info = menuTemplate;
 
-    info = info.replace("--title--", "Offline Tubo Projects: ");
+    info = info.replace("--title--", "Offline BMS Devices: ");
 
     let infoData = ""
     let Checker = false;
