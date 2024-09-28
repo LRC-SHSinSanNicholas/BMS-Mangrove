@@ -140,7 +140,7 @@ function LoadWebsite() {
             totalOnline++;
         }
     
-        innovationName.textContent = curData["name"]
+        innovationName.textContent = curData["name"].replace("Tubo 1", "Mid Section")
     
         innovationIcon.className = "material-symbols-outlined";
         innovationIcon.textContent = statusMap["icon"][curData["status"]];
