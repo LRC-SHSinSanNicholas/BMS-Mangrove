@@ -86,6 +86,8 @@ const LoadingMSG = document.getElementById("loading-msg");
 const imagePreview = document.getElementById("ImagePreview");
 const LoadingPanel = document.getElementById("loading");
 
+var curDataTemp = {}
+var curClicked = "NO";
 var focus = true;
 var tuboList = []
 var totalTubo = {}
@@ -155,7 +157,7 @@ function LoadWebsite() {
         newInnovation.appendChild(statusDiv);
         sineg_map.appendChild(newInnovation);
     
-        newInnovation.addEventListener("click", function() {
+        newInnovation.addEventListener("click", function handleSidebar() {
             let info = dataTemplate;
             info = info.replace("--title--", curData["name"]);
     
@@ -214,14 +216,13 @@ function LoadWebsite() {
                     })
             })
 
-            requestbutton
-
+            curDataTemp = i;
+            curClicked = handleSidebar;
             ActivateCloseButton();
         })
     
         tuboList.push(newInnovation)
     }
-
     onlineCounter.textContent = `${totalOnline} / ${totalTubo}`
 }
 
@@ -240,6 +241,7 @@ function ActivateCloseButton() {
     let closebutton = document.querySelectorAll(".closebutton");
     for (let i = 0; i < closebutton.length; i++) {
         closebutton[i].addEventListener("click", function() {
+            curClicked = "NO";
             let targetElement = closebutton[i].id.replace("close", "")
             document.getElementById(targetElement).className = targetElement;
         })
@@ -248,10 +250,10 @@ function ActivateCloseButton() {
 
 function ActivateHyperAction() {
     let allTuboElements = document.querySelectorAll(".tuboproj")
-
     for (let i = 0; i < allTuboElements.length; i++) {
         allTuboElements[i].addEventListener("click", function() {
             tuboList[parseInt(allTuboElements[i].id.replace("idx", ""))].click()
+            curClicked = tuboList[parseInt(allTuboElements[i].id.replace("idx", ""))].click;
         })
     }
 }
@@ -294,7 +296,6 @@ function ActivatePictureButtons() {
 
 function openMenu() {
     let info = menuTemplate;
-
     info = info.replace("--title--", "All BMS Devices ");
 
     let infoData = ""
@@ -320,13 +321,13 @@ function openMenu() {
 
     sideInfo.innerHTML = info;
     sideInfo.className = "sideinfo active";
+    curClicked = openMenu;
     ActivateCloseButton();
     ActivateHyperAction();
 }
 
 function openActive() {
     let info = menuTemplate;
-
     info = info.replace("--title--", "Active BMS Devices: ");
 
     let infoData = ""
@@ -360,7 +361,6 @@ function openActive() {
 
 function openWarning() {
     let info = menuTemplate;
-
     info = info.replace("--title--", "Dangered BMS Devices:");
 
     let infoData = ""
@@ -394,7 +394,6 @@ function openWarning() {
 
 function openOffline() {
     let info = menuTemplate;
-
     info = info.replace("--title--", "Offline BMS Devices: ");
 
     let infoData = ""
@@ -439,9 +438,30 @@ document.addEventListener("DOMContentLoaded", async function() {
      while (true) {
         if (focus) {
             console.log("Reloading data....");
-            Startup();
+            if (curClicked != "NO") {
+                Startup();
+
+                curData = CurrentData["tubo"][curDataTemp];
+                let info = dataTemplate;
+                info = info.replace("--title--", curData["name"]);
+        
+                let message = "";
+        
+                if (curData["message"].length != 0) {
+                    for (let i = 0; i < curData["message"].length; i++) {
+                        message += `• ${curData["message"][i]} <br>`
+                    }
+                }
+        
+                else {
+                    message = "• No messages to display! Yay!"
+                }
+        
+                info = info.replace("--data--", `<p><span class="material-symbols-outlined">device_thermostat</span> Temperature: ${curData["temperature"]}</p> <p><span class="material-symbols-outlined">humidity_percentage</span> Humidity: ${curData["humidity"]} </p><p><span class="material-symbols-outlined">water</span> Water Level: ${curData["waterlevel"]}</p><p><span class="material-symbols-outlined">water_ph</span> pH Level: ${parseInt(curData["pH"])}</p><p><span class="material-symbols-outlined">dew_point</span> Soil Moisture: ${curData["moisture"]}</p><p><span class="material-symbols-outlined">thermostat</span> Soil Temperature: ${curData["soiltemp"]}</p><p><span class="material-symbols-outlined">water_ec</span> Soil Conductivity: ${curData["soilconduct"]}</p><p><span class="material-symbols-outlined">rainy</span> Raining: ${curData["rain"]}</p> <hr> <h4>${curData["timeUpdated"]}</h4> <br> <p>${message}</p>`)
+                sideData.innerHTML = info;
+            }
         }
-        await sleep(5000);
+        await sleep(3000);
     }
 })
 
