@@ -86,6 +86,7 @@ const LoadingMSG = document.getElementById("loading-msg");
 const imagePreview = document.getElementById("ImagePreview");
 const LoadingPanel = document.getElementById("loading");
 
+var focus = true;
 var tuboList = []
 var totalTubo = {}
 var totalOnline = 0;
@@ -118,7 +119,6 @@ function Startup() {
 }
 
 Startup();
-
 
 function LoadWebsite() {
     var totalTubo = CurrentData["tubo"].length;
@@ -433,3 +433,24 @@ activeList.addEventListener("click", openActive)
 warningList.addEventListener("click", openWarning)
 
 offlineList.addEventListener("click", openOffline)
+
+document.addEventListener("DOMContentLoaded", async function() {
+     await sleep(5000);
+     while (true) {
+        if (focus) {
+            console.log("Reloading data....");
+            LoadWebsite();
+        }
+        await sleep(5000);
+    }
+})
+
+window.onblur = function(){
+    focus = false;
+    document.title = "COME BACK!";
+}
+
+window.onfocus = function() {
+    focus = true;
+    document.title = "PROJECT BMS";
+}
