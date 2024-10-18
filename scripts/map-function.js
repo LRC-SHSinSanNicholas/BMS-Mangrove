@@ -439,7 +439,7 @@ document.addEventListener("DOMContentLoaded", async function() {
      while (true) {
         if (focus) {
             console.log("Reloading data....");
-            LoadWebsite();
+            Startup();
         }
         await sleep(5000);
     }
