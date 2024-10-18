@@ -93,27 +93,32 @@ var CurrentData = {}
 var CurrentIDX = 0;
 var CurrentPrevTubo = 1;
 
-var pastRecord = localStorage.getItem("pastData");
+function Startup() {
+    var pastRecord = localStorage.getItem("pastData");
 
-if (pastRecord != null) {
-    CurrentData = JSON.parse(pastRecord);
-    LoadWebsite();
-}
+    if (pastRecord != null) {
+        CurrentData = JSON.parse(pastRecord);
+        LoadWebsite();
+    }
 
-document.getElementById("loadingclose").addEventListener("click", function() {
-    LoadingPanel.className = "loading-screen";
-})
-
-fetch("https://lrc.pythonanywhere.com/getData")
-    .then(response => {
-      return response.json();
+    document.getElementById("loadingclose").addEventListener("click", function() {
+        LoadingPanel.className = "loading-screen";
     })
 
-    .then(data => {
-        CurrentData = data;
-        localStorage.setItem("pastData", JSON.stringify(CurrentData))
-        LoadWebsite();
-    });
+    fetch("https://lrc.pythonanywhere.com/getData")
+        .then(response => {
+        return response.json();
+        })
+
+        .then(data => {
+            CurrentData = data;
+            localStorage.setItem("pastData", JSON.stringify(CurrentData))
+            LoadWebsite();
+        });
+}
+
+Startup();
+
 
 function LoadWebsite() {
     var totalTubo = CurrentData["tubo"].length;
@@ -306,7 +311,7 @@ function openMenu() {
     }
 
     if (!Checker) {
-        info = info.replace("--data--", "N/A")
+        info = info.replace("--data--", "")
     }
     
     else {
@@ -340,7 +345,7 @@ function openActive() {
     }
 
     if (!Checker) {
-        info = info.replace("--data--", "N/A")
+        info = info.replace("--data--", "")
     }
     
     else {
@@ -356,7 +361,7 @@ function openActive() {
 function openWarning() {
     let info = menuTemplate;
 
-    info = info.replace("--title--", "In danger BMS Devices");
+    info = info.replace("--title--", "Dangered BMS Devices:");
 
     let infoData = ""
     let Checker = false;
@@ -374,7 +379,7 @@ function openWarning() {
     }
 
     if (!Checker) {
-        info = info.replace("--data--", "N/A")
+        info = info.replace("--data--", "")
     }
     
     else {
@@ -408,7 +413,7 @@ function openOffline() {
     }
 
     if (!Checker) {
-        info = info.replace("--data--", "N/A")
+        info = info.replace("--data--", "")
     }
     
     else {

@@ -1,0 +1,31 @@
+@font-face {
+    font-family: 'CG';
+    src: url('Century Gothic.ttf') format('truetype'),
+         url('CenturyGothic.ttf') format('truetype'),
+         url('GOTHIC.TTF') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'CGB';
+    src: url('GOTHICB.TTF') format('truetype'),
+         url('GOTHICB0.TTF') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+  
+@font-face {
+    font-family: 'CGI';
+    src: url('GOTHICI.TTF') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+  
+@font-face {
+    font-family: 'CGBI';
+    src: url('GOTHICBI.TTF') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+  
