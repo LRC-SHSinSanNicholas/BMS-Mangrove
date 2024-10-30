@@ -9,9 +9,9 @@ const statusMap = {
     },
 
     "icon": {
-        "active": "sentiment_satisfied", 
-        "warning": "sentiment_dissatisfied", 
-        "offline": "sentiment_very_dissatisfied" 
+        "active": "recommend", 
+        "warning": "error", 
+        "offline": "wifi_off" 
     }
 }
 
@@ -74,6 +74,9 @@ const imgPrevTemplate = `
         </div>
 `
 
+var current_selected = null;
+var current_nodes = [];
+
 const onlineCounter = document.getElementById("onlineCounter");
 const activeList = document.getElementById("active-list");
 const warningList = document.getElementById("warning-list");
@@ -96,12 +99,14 @@ var CurrentData = {}
 var CurrentIDX = 0;
 var CurrentPrevTubo = 1;
 
-function Startup() {
+function Startup(reload = false) {
     var pastRecord = localStorage.getItem("pastData");
 
     if (pastRecord != null) {
         CurrentData = JSON.parse(pastRecord);
-        LoadWebsite();
+        if (!reload) {
+            LoadWebsite();
+        }
     }
 
     document.getElementById("loadingclose").addEventListener("click", function() {
@@ -110,7 +115,7 @@ function Startup() {
 
     fetch("https://lrc.pythonanywhere.com/getData")
         .then(response => {
-        return response.json();
+            return response.json();
         })
 
         .then(data => {
@@ -126,6 +131,8 @@ function LoadWebsite() {
     var totalTubo = CurrentData["tubo"].length;
 
     totalOnline = 0;
+
+    current_nodes = [];
 
     for (let i = 0; i < CurrentData["tubo"].length; i++) {
         let curData = CurrentData["tubo"][i];
@@ -147,7 +154,7 @@ function LoadWebsite() {
             totalOnline++;
         }
     
-        innovationName.textContent = curData["name"].replace("Tubo 1", "Mid Section")
+        innovationName.textContent = curData["name"]
     
         innovationIcon.className = "material-symbols-outlined";
         innovationIcon.textContent = statusMap["icon"][curData["status"]];
@@ -156,8 +163,11 @@ function LoadWebsite() {
         statusDiv.appendChild(innovationIcon);
         newInnovation.appendChild(statusDiv);
         sineg_map.appendChild(newInnovation);
-    
+        
+        current_nodes.push(newInnovation);
+
         newInnovation.addEventListener("click", function handleSidebar() {
+            current_selected = i;
             let info = dataTemplate;
             info = info.replace("--title--", curData["name"]);
     
@@ -177,8 +187,8 @@ function LoadWebsite() {
             sideData.innerHTML = info;
             sideData.className = "sidedata active";
 
-            let previewbutton = document.getElementById("tuboprev")
-            let requestbutton = document.getElementById("reqImg")
+            let previewbutton = document.getElementById("tuboprev");
+            let requestbutton = document.getElementById("reqImg");
 
             let curTubo = parseInt(curData["idx"].replace("idx", "")) + 1;
 
@@ -223,7 +233,11 @@ function LoadWebsite() {
     
         tuboList.push(newInnovation)
     }
-    onlineCounter.textContent = `${totalOnline} / ${totalTubo}`
+    onlineCounter.textContent = `${totalOnline} / ${totalTubo}`;
+
+    if (current_selected != null) {
+        current_nodes[current_selected].click();
+    }
 }
 
 function sleep(ms) {
@@ -244,8 +258,11 @@ function ActivateCloseButton() {
             curClicked = "NO";
             let targetElement = closebutton[i].id.replace("close", "")
             document.getElementById(targetElement).className = targetElement;
+            current_selected = null;
         })
     }
+
+    
 }
 
 function ActivateHyperAction() {
@@ -439,7 +456,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         if (focus) {
             console.log("Reloading data....");
             if (curClicked != "NO") {
-                Startup();
+                Startup(true);
 
                 curData = CurrentData["tubo"][curDataTemp];
                 let info = dataTemplate;
@@ -459,6 +476,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         
                 info = info.replace("--data--", `<p><span class="material-symbols-outlined">device_thermostat</span> Temperature: ${curData["temperature"]}</p> <p><span class="material-symbols-outlined">humidity_percentage</span> Humidity: ${curData["humidity"]} </p><p><span class="material-symbols-outlined">water</span> Water Level: ${curData["waterlevel"]}</p><p><span class="material-symbols-outlined">water_ph</span> pH Level: ${parseInt(curData["pH"])}</p><p><span class="material-symbols-outlined">dew_point</span> Soil Moisture: ${curData["moisture"]}</p><p><span class="material-symbols-outlined">thermostat</span> Soil Temperature: ${curData["soiltemp"]}</p><p><span class="material-symbols-outlined">water_ec</span> Soil Conductivity: ${curData["soilconduct"]}</p><p><span class="material-symbols-outlined">rainy</span> Raining: ${curData["rain"]}</p> <hr> <h4>${curData["timeUpdated"]}</h4> <br> <p>${message}</p>`)
                 sideData.innerHTML = info;
+                ActivateCloseButton();
             }
         }
         await sleep(3000);
